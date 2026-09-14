@@ -97,6 +97,7 @@
               <article
                 class="item-card"
                 [class.is-selected]="selectedItemId() === item.id"
+                [class.is-touch-preview]="previewItemId() === item.id"
                 [class.is-disabled]="!canBuy(item)"
                 [class.item-card--shield]="item.icon === 'shield'"
                 [class.item-card--heart]="item.icon === 'heart'"
@@ -110,7 +111,9 @@
                 tabindex="0"
                 role="button"
                 [attr.aria-label]="'Abrir detalle de ' + item.name"
-                (click)="openItemModal(item)"
+                (pointerdown)="previewItemAnimation(item, $event)"
+                (pointerup)="openItemFromPointer(item, $event)"
+                (click)="openItemFromClick(item, $event)"
                 (keydown.enter)="openItemModal(item)"
                 (keydown.space)="$event.preventDefault(); openItemModal(item)"
               >

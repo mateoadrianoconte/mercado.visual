@@ -34,6 +34,7 @@ export class AppComponent {
   protected readonly selectedFilter = signal<CatalogFilter>('ALL');
   protected readonly searchTerm = signal('');
   protected readonly selectedItemId = signal<string | null>(null);
+  protected readonly previewItemId = signal<string | null>(null);
   protected readonly modalItem = signal<CatalogItem | null>(null);
   protected readonly purchasePreview = signal<PurchasePreview | null>(null);
   protected readonly feedback = signal('Catalogo listo. Elegi un item para revisar la compra.');
@@ -96,6 +97,43 @@ export class AppComponent {
   protected selectItem(item: CatalogItem): void {
     this.selectedItemId.set(item.id);
     this.purchasePreview.set(null);
+    this.openItemModal(item);
+  }
+
+  protected previewItemAnimation(item: CatalogItem, event: PointerEvent): void {
+    if (event.pointerType !== 'touch') {
+      return;
+    }
+
+    this.previewItemId.set(item.id);
+    window.setTimeout(() => {
+      if (this.previewItemId() === item.id) {
+        this.previewItemId.set(null);
+      }
+    }, 520);
+  }
+
+  protected openItemFromPointer(item: CatalogItem, event: PointerEvent): void {
+    if (event.pointerType !== 'touch') {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.previewItemId.set(item.id);
+    window.setTimeout(() => {
+      this.previewItemId.set(null);
+      this.openItemModal(item);
+    }, 260);
+  }
+
+  protected openItemFromClick(item: CatalogItem, event: MouseEvent): void {
+    if (this.previewItemId() === item.id) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
     this.openItemModal(item);
   }
 
