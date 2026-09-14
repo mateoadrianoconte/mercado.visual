@@ -1,0 +1,213 @@
+<main class="market-shell" data-theme="arcade-dark">
+  <aside class="side-nav" aria-label="Navegacion principal">
+    <a class="nav-link" href="#" aria-label="Inicio">
+      <span class="nav-icon" aria-hidden="true">🏠</span>
+      <strong>Inicio</strong>
+    </a>
+    <a class="nav-link" href="#" aria-label="Roadmap">
+      <span class="nav-icon" aria-hidden="true">🗺️</span>
+      <strong>Roadmap</strong>
+    </a>
+    <a class="nav-link is-active" href="#" aria-label="Mercado">
+      <span class="nav-icon" aria-hidden="true">🛒</span>
+      <strong>Mercado</strong>
+    </a>
+    <a class="nav-link" href="#" aria-label="Ranking">
+      <span class="nav-icon" aria-hidden="true">🏆</span>
+      <strong>Ranking</strong>
+    </a>
+  </aside>
+
+  <header class="player-bar" aria-label="Estado del jugador">
+    <div class="profile-chip">
+      <div class="avatar" aria-hidden="true"><span></span></div>
+      <div>
+        <strong>Mateo - Nivel 4</strong>
+        <div class="xp-row" aria-label="Experiencia 7 de 12">
+          <span class="xp on"></span>
+          <span class="xp on"></span>
+          <span class="xp on"></span>
+          <span class="xp on"></span>
+          <span class="xp on"></span>
+          <span class="xp"></span>
+          <span class="xp"></span>
+          <span class="xp"></span>
+          <em>XP 7/12</em>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-stat">
+      <span>Vidas</span>
+      <img class="life-icons" src="assets/corazon-vidas.png" alt="2 vidas activas">
+    </div>
+
+    <div class="hud-stat coins">
+      <span>Monedas</span>
+      <strong>
+        <img class="coin-icon" src="assets/monedasSINfondo.png" alt="" aria-hidden="true">
+        {{ balance() }}
+      </strong>
+    </div>
+
+    <button class="theme-switch" type="button" (click)="toggleTheme()">
+      <span>Modo arcade - oscuro</span>
+      <i aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <section class="market-stage" aria-labelledby="market-title">
+    <header class="market-header">
+      <div class="title-block">
+        <h1 id="market-title">MERCADO</h1>
+        <p>Equipate para tu proximo desafio</p>
+      </div>
+
+      <div class="search-box">
+        <span aria-hidden="true"></span>
+        <label for="catalog-search">Buscar item</label>
+        <input
+          id="catalog-search"
+          type="search"
+          placeholder="Buscar item..."
+          [value]="searchTerm()"
+          (input)="updateSearch($any($event.target).value)"
+        >
+      </div>
+    </header>
+
+    <nav class="filter-bar" aria-label="Filtros de catalogo">
+      <button type="button" [class.is-active]="selectedFilter() === 'ALL'" (click)="setFilter('ALL')">Todos</button>
+      <button type="button" [class.is-active]="selectedFilter() === 'SHIELD'" (click)="setFilter('SHIELD')">Escudo</button>
+      <button type="button" [class.is-active]="selectedFilter() === 'EXPERIENCE'" (click)="setFilter('EXPERIENCE')">Experiencia</button>
+      <button type="button" [class.is-active]="selectedFilter() === 'COINS'" (click)="setFilter('COINS')">Monedas</button>
+      <button type="button" [class.is-active]="selectedFilter() === 'LIVES'" (click)="setFilter('LIVES')">Vidas</button>
+    </nav>
+
+    <section class="catalog-sections" aria-label="Catalogo de productos">
+      @for (section of catalogSections(); track section.family) {
+        <section class="catalog-family" [class]="'catalog-family catalog-family--' + section.family.toLowerCase()">
+          <header class="family-header">
+            <span>{{ section.kicker }}</span>
+            <h2>{{ section.title }}</h2>
+          </header>
+
+          <div class="catalog-grid">
+            @for (item of section.items; track item.id) {
+              <article
+                class="item-card"
+                [class.is-selected]="selectedItemId() === item.id"
+                [class.is-disabled]="!canBuy(item)"
+                [class.item-card--shield]="item.icon === 'shield'"
+                [class.item-card--heart]="item.icon === 'heart'"
+                [class.item-card--xp]="item.icon === 'xp'"
+                [class.item-card--coin]="item.icon === 'coin'"
+                [class.item-card--purple]="item.accent === 'PURPLE'"
+                [class.item-card--pink]="item.accent === 'PINK'"
+                [class.item-card--yellow]="item.accent === 'YELLOW'"
+                [class.item-card--cyan]="item.accent === 'CYAN'"
+                [attr.data-family]="item.family"
+                tabindex="0"
+                role="button"
+                [attr.aria-label]="'Abrir detalle de ' + item.name"
+                (click)="openItemModal(item)"
+                (keydown.enter)="openItemModal(item)"
+                (keydown.space)="$event.preventDefault(); openItemModal(item)"
+              >
+                <div class="item-card__visual">
+                  <div class="item-card__effects" aria-hidden="true">
+                    @if (item.family === 'SHIELD') {
+                      <span class="item-card__particle item-card__particle--mini-shield"></span>
+                      <span class="item-card__particle item-card__particle--sword"></span>
+                    }
+                    @if (item.family === 'EXPERIENCE') {
+                      <span class="item-card__aurora item-card__aurora--left"></span>
+                      <span class="item-card__aurora item-card__aurora--center"></span>
+                      <span class="item-card__aurora item-card__aurora--right"></span>
+                    }
+                    @if (item.family === 'COINS') {
+                      <span class="item-card__particle item-card__particle--coin item-card__particle--coin-1"></span>
+                      <span class="item-card__particle item-card__particle--coin item-card__particle--coin-2"></span>
+                      <span class="item-card__particle item-card__particle--coin item-card__particle--coin-3"></span>
+                      <span class="item-card__particle item-card__particle--coin item-card__particle--coin-4"></span>
+                    }
+                    @if (item.family === 'LIVES') {
+                      <span class="item-card__particle item-card__particle--heart item-card__particle--heart-1"></span>
+                      <span class="item-card__particle item-card__particle--heart item-card__particle--heart-2"></span>
+                      <span class="item-card__particle item-card__particle--heart item-card__particle--heart-3"></span>
+                      <span class="item-card__particle item-card__particle--heart item-card__particle--heart-4"></span>
+                    }
+                  </div>
+                  <img class="item-card__image" [src]="item.imageUrl" [alt]="item.imageAlt">
+                </div>
+
+                <span class="item-card__tier">{{ item.tier }}</span>
+                <h3 class="item-card__name">{{ item.name }}</h3>
+                <p class="item-card__effect">{{ item.description }}</p>
+
+                <div class="item-card__price" [attr.aria-label]="item.price + ' monedas'">
+                  <span class="item-card__coin" aria-hidden="true"></span>
+                  <span>{{ item.price }}</span>
+                </div>
+
+                @if (item.status === 'SOLD_OUT') {
+                  <span class="item-card__state item-card__state--sold">Agotado</span>
+                } @else if (item.status === 'LOCKED') {
+                  <span class="item-card__state item-card__state--soon">Proximamente</span>
+                }
+
+                <button class="item-card__button" type="button" [disabled]="!canBuy(item)" (click)="$event.stopPropagation(); selectItem(item)">
+                  {{ canBuy(item) ? 'Ver detalle' : statusLabel(item) }}
+                </button>
+              </article>
+            }
+          </div>
+        </section>
+      } @empty {
+        <p class="empty-state">No hay items para este filtro.</p>
+      }
+    </section>
+
+    <footer class="market-note">
+      <span aria-hidden="true">i</span>
+      <p>Los objetos y monedas pertenecen a este curso</p>
+      <strong aria-live="polite">{{ feedback() }}</strong>
+    </footer>
+  </section>
+
+  @if (modalItem(); as item) {
+    <section class="item-modal" aria-labelledby="item-modal-title" role="dialog" aria-modal="true" (click)="closeItemModal()">
+      <article
+        class="item-modal__panel"
+        [class.item-modal__panel--shield]="item.icon === 'shield'"
+        [class.item-modal__panel--purple]="item.accent === 'PURPLE'"
+        [class.item-modal__panel--pink]="item.accent === 'PINK'"
+        [class.item-modal__panel--yellow]="item.accent === 'YELLOW'"
+        [class.item-modal__panel--cyan]="item.accent === 'CYAN'"
+        (click)="$event.stopPropagation()"
+      >
+        <button class="item-modal__close" type="button" aria-label="Cerrar detalle" (click)="closeItemModal()">X</button>
+
+        <div class="item-modal__visual">
+          <img [src]="item.imageUrl" [alt]="item.imageAlt">
+        </div>
+
+        <div class="item-modal__content">
+          <span class="item-modal__family">{{ filterLabel(item.family) }} / {{ item.tier }}</span>
+          <h2 id="item-modal-title">{{ item.name }}</h2>
+          <p class="item-modal__description">{{ item.fullDescription }}</p>
+          <p class="item-modal__effect">{{ item.description }}</p>
+
+          <div class="item-modal__price" [attr.aria-label]="item.price + ' monedas'">
+            <span class="item-card__coin" aria-hidden="true"></span>
+            <strong>{{ item.price }}</strong>
+          </div>
+
+          <button class="item-modal__buy" type="button" [disabled]="!canBuy(item)" (click)="buyModalItem(item)">
+            {{ canBuy(item) ? 'Comprar' : statusLabel(item) }}
+          </button>
+        </div>
+      </article>
+    </section>
+  }
+</main>
