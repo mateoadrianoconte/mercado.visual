@@ -463,20 +463,23 @@ h1 {
 }
 
 .item-card__image {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
   z-index: 2;
   display: block;
   width: 76%;
   height: 76%;
   object-fit: contain;
+  object-position: center;
   image-rendering: pixelated;
   filter: drop-shadow(4px 5px 0 #05040d);
+  transform: translate(-50%, -50%);
 }
 
 .item-card--shield .item-card__image {
   width: 70%;
   height: 70%;
-  margin-top: -10px;
 }
 
 .item-card--coin .item-card__image {
@@ -487,7 +490,6 @@ h1 {
 .item-card--xp .item-card__image {
   width: 66%;
   height: 66%;
-  margin-top: -8px;
 }
 
 .item-card--heart .item-card__image {
@@ -998,19 +1000,19 @@ h1 {
 
 @keyframes item-jump {
   0% {
-    transform: translateY(0) rotate(0);
+    transform: translate(-50%, -50%) translateY(0) rotate(0);
   }
 
   42% {
-    transform: translateY(-6px) rotate(-2deg);
+    transform: translate(-50%, -50%) translateY(-6px) rotate(-2deg);
   }
 
   72% {
-    transform: translateY(1px) rotate(1deg);
+    transform: translate(-50%, -50%) translateY(1px) rotate(1deg);
   }
 
   100% {
-    transform: translateY(0) rotate(0);
+    transform: translate(-50%, -50%) translateY(0) rotate(0);
   }
 }
 
@@ -1363,24 +1365,20 @@ h1 {
 
   .filter-bar {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(112px, 1fr);
-    gap: 10px;
-    margin: 0 -14px 18px;
-    padding: 0 14px 7px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .filter-bar::-webkit-scrollbar {
-    display: none;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 18px;
+    padding: 0;
+    overflow: visible;
   }
 
   .filter-bar button {
     min-width: 0;
-    min-height: 42px;
+    min-height: 40px;
+    padding: 0 5px;
     box-shadow: 3px 4px 0 #05040d;
-    font-size: 0.66rem;
+    font-size: 0.54rem;
+    letter-spacing: 0.04em;
     white-space: nowrap;
   }
 
@@ -1426,6 +1424,16 @@ h1 {
   .item-card__visual {
     margin-bottom: 9px;
     border-width: 7px;
+  }
+
+  .item-card__image,
+  .item-card--shield .item-card__image,
+  .item-card--xp .item-card__image,
+  .item-card--coin .item-card__image,
+  .item-card--heart .item-card__image {
+    align-self: center;
+    justify-self: center;
+    margin: 0;
   }
 
   .item-card__name {
